@@ -1,8 +1,20 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { WavStreamPlayer } from '../lib/wavtools';
 import { Button } from '../components/button/Button';
 import './Styles.scss';
+
+// Centralize language data (outside component to prevent re-creation)
+const languages = {
+  fr: { name: 'French' },
+  es: { name: 'Spanish' },
+  tl: { name: 'Tagalog' },
+  en: { name: 'English' },
+  zh: { name: 'Mandarin' },
+  it: { name: 'Italian' },
+} as const;
+
+type LanguageKey = keyof typeof languages;
 
 // ListenerPage component handles audio streaming for selected languages
 export function ListenerPage() {
@@ -12,18 +24,6 @@ export function ListenerPage() {
   // State variables for managing connection status and selected language
   const [isConnected, setIsConnected] = useState(false);
   const [selectedLang, setSelectedLang] = useState<'fr' | 'es' | 'tl' | 'en' | 'zh' | 'it' | null>(null);
-
-  // Centralize language data
-  const languages = {
-    fr: { name: 'French' },
-    es: { name: 'Spanish' },
-    tl: { name: 'Tagalog' },
-    en: { name: 'English' },
-    zh: { name: 'Mandarin' },
-    it: { name: 'Italian' },
-  } as const;
-
-  type LanguageKey = keyof typeof languages;
 
   // Extract language options into a separate function
   const renderLanguageOptions = () => (
@@ -67,17 +67,19 @@ export function ListenerPage() {
     }
   }, []);
 
-  // Helper function to handle playing audio chunks
-  const playAudioChunk = (lang: LanguageKey, chunk: ArrayBuffer) => {
+  // Helper function to handle playing audio chunks (memoized to prevent dependency issues)
+  const playAudioChunk = useCallback((lang: LanguageKey, chunk: ArrayBuffer) => {
     console.log(`Playing ${lang.toUpperCase()} chunk:`, chunk.byteLength);
     wavStreamPlayerRef.current.add16BitPCM(chunk);
-  };
+  }, []);
 
-  // Dynamically create language handlers
-  const languageHandlers: Record<LanguageKey, (chunk: ArrayBuffer) => void> = Object.keys(languages).reduce((handlers, lang) => {
-    handlers[lang as LanguageKey] = (chunk) => playAudioChunk(lang as LanguageKey, chunk);
-    return handlers;
-  }, {} as Record<LanguageKey, (chunk: ArrayBuffer) => void>);
+  // Dynamically create language handlers (memoized to prevent unnecessary re-renders)
+  const languageHandlers: Record<LanguageKey, (chunk: ArrayBuffer) => void> = useMemo(() => {
+    return Object.keys(languages).reduce((handlers, lang) => {
+      handlers[lang as LanguageKey] = (chunk) => playAudioChunk(lang as LanguageKey, chunk);
+      return handlers;
+    }, {} as Record<LanguageKey, (chunk: ArrayBuffer) => void>);
+  }, [playAudioChunk]);
 
   // UseEffect to handle socket events for selected language
   useEffect(() => {
@@ -92,7 +94,7 @@ export function ListenerPage() {
       console.log(`Cleaning up listener for language: ${selectedLang}`);
       socket.off(`audioFrame:${selectedLang}`, handleChunk);
     };
-  }, [selectedLang]);
+  }, [selectedLang, languageHandlers]);
 
   return (
     <div className="listener-page">
