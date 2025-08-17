@@ -40,6 +40,7 @@ const languageNames: Record<string, string> = {
 
 // SpeakerPage component handles real-time audio recording and streaming for multiple languages
 export function SpeakerPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [realtimeEvents, setRealtimeEvents] = useState<RealtimeEvent[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -209,7 +210,7 @@ export function SpeakerPage() {
 
   const handleRealtimeEvent = (ev: RealtimeEvent, languageCode: string) => {
     // Check if the event type is a completed audio transcript
-    if (ev.event.type == "response.audio_transcript.done") {
+    if (ev.event.type === "response.audio_transcript.done") {
       console.log(ev.event.transcript);
       // Update the transcripts state by adding the new transcript with language code
       setTranscripts((prev) => [{ transcript: ev.event.transcript, language: languageCode }, ...prev]);
