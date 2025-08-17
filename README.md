@@ -56,7 +56,7 @@ To add a new language to the codebase, follow these steps:
 
 1. **Socket Event Handling in Mirror Server:**
 
-   - Open `mirror-server/mirror-server.cjs`.
+   - Open `mirror-server/mirror-server.mjs`.
    - Add a new socket event for the new language. For example, for Hindi:
      ```javascript
      socket.on('mirrorAudio:hi', (audioChunk) => {
