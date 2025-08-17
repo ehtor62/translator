@@ -11,7 +11,7 @@ export function ListenerPage() {
 
   // State variables for managing connection status and selected language
   const [isConnected, setIsConnected] = useState(false);
-  const [selectedLang, setSelectedLang] = useState<'fr' | 'es' | 'tl' | 'en' | 'zh' | null>(null);
+  const [selectedLang, setSelectedLang] = useState<'fr' | 'es' | 'tl' | 'en' | 'zh' | 'it' | null>(null);
 
   // Centralize language data
   const languages = {
@@ -20,6 +20,7 @@ export function ListenerPage() {
     tl: { name: 'Tagalog' },
     en: { name: 'English' },
     zh: { name: 'Mandarin' },
+    it: { name: 'Italian' },
   } as const;
 
   type LanguageKey = keyof typeof languages;

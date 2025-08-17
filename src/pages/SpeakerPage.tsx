@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { RealtimeClient } from '@openai/realtime-api-beta';
 import { Button } from '../components/button/Button';
 import { Toggle } from '../components/toggle/Toggle';
-import { french_instructions, spanish_instructions, tagalog_instructions, english_instructions, mandarin_instructions } from '../utils/translation_prompts.js';
+import { french_instructions, spanish_instructions, tagalog_instructions, english_instructions, mandarin_instructions, italian_instructions } from '../utils/translation_prompts.js';
 import { WavRecorder } from '../lib/wavtools/index.js';
 import './Styles.scss';
 import { io, Socket } from 'socket.io-client';
@@ -25,6 +25,7 @@ const languageConfigs = [
   { code: 'tl', instructions: tagalog_instructions },
   { code: 'en', instructions: english_instructions },
   { code: 'zh', instructions: mandarin_instructions },
+  { code: 'it', instructions: italian_instructions },
 ];
 
 // Map language codes to full names
@@ -34,6 +35,7 @@ const languageNames: Record<string, string> = {
   tl: 'Tagalog',
   en: 'English',
   zh: 'Mandarin',
+  it: 'Italian',
 };
 
 // SpeakerPage component handles real-time audio recording and streaming for multiple languages
@@ -203,7 +205,7 @@ export function SpeakerPage() {
         clientRef.current.reset();
       }
     };
-  }, [french_instructions, spanish_instructions, tagalog_instructions, english_instructions, mandarin_instructions]);
+  }, [french_instructions, spanish_instructions, tagalog_instructions, english_instructions, mandarin_instructions, italian_instructions]);
 
   const handleRealtimeEvent = (ev: RealtimeEvent, languageCode: string) => {
     // Check if the event type is a completed audio transcript

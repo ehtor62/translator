@@ -32,6 +32,11 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('audioFrame:zh', audioChunk);
   });
 
+  socket.on('mirrorAudio:it', (audioChunk) => {
+    console.log('logging Italian mirrorAudio', audioChunk);
+    socket.broadcast.emit('audioFrame:it', audioChunk);
+  });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected', socket.id);
   });
